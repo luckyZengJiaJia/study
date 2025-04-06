@@ -11,6 +11,7 @@
             background: linear-gradient(to bottom right, #ffb6c1, #add8e6);
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         /* 导航栏样式 */
@@ -21,6 +22,9 @@
             align-items: center;
             padding: 10px 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         nav a {
@@ -41,6 +45,40 @@
             cursor: pointer;
         }
 
+        /* 加载动画样式 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader-spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #ff69b4;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         header {
             background-color: rgba(255, 255, 255, 0.3);
             text-align: center;
@@ -59,6 +97,15 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         h2 {
@@ -107,6 +154,28 @@
             right: 10px;
         }
 
+        /* 图片滑动指示器样式 */
+        .slider-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+        }
+
+        .slider-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .slider-indicator.active {
+            background-color: white;
+        }
+
         #video-container video {
             max-width: 100%;
             height: auto;
@@ -117,6 +186,25 @@
 
         #video-container video:hover {
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 视频播放提示样式 */
+        .video-play-prompt {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #video-container video:hover + .video-play-prompt {
+            opacity: 1;
         }
 
         #audio-container audio {
@@ -132,6 +220,12 @@
         #audio-container audio::-webkit-media-controls-current-time-display,
         #audio-container audio::-webkit-media-controls-time-remaining-display {
             color: white;
+        }
+
+        /* 音频音量控制样式 */
+        #audio-container audio::-webkit-media-controls-mute-button,
+        #audio-container audio::-webkit-media-controls-volume-slider {
+            filter: hue-rotate(180deg);
         }
 
         footer {
@@ -158,10 +252,34 @@
                 text-align: center;
             }
         }
+
+        /* 漂浮小爱心样式 */
+        .heart {
+            position: fixed;
+            top: -10px;
+            color: #ff69b4;
+            font-size: 20px;
+            animation: float 5s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% {
+                top: -10px;
+            }
+            100% {
+                top: 100vh;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- 加载动画 -->
+    <div class="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
     <nav>
         <a href="#">首页</a>
         <a href="#">图片</a>
@@ -187,6 +305,7 @@
                 </div>
                 <button class="slider-button prev" onclick="prevSlide()">&#10094;</button>
                 <button class="slider-button next" onclick="nextSlide()">&#10095;</button>
+                <div class="slider-indicators" id="slider-indicators"></div>
             </div>
         </section>
 
@@ -194,14 +313,20 @@
         <section id="video-section">
             <h2>记录的点滴时光</h2>
             <div id="video-container">
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/Jay.mp4" type="video/mp4">
-                    你的浏览器不支持播放此视频。
-                </video>
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/love.mp4" type="video/mp4">
-                    你的浏览器不支持播放此视频。
-                </video>
+                <div class="video-wrapper">
+                    <video controls>
+                        <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/Jay.mp4" type="video/mp4">
+                        你的浏览器不支持播放此视频。
+                    </video>
+                    <div class="video-play-prompt">点击播放</div>
+                </div>
+                <div class="video-wrapper">
+                    <video controls>
+                        <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/love.mp4" type="video/mp4">
+                        你的浏览器不支持播放此视频。
+                    </video>
+                    <div class="video-play-prompt">点击播放</div>
+                </div>
             </div>
         </section>
 
@@ -211,7 +336,8 @@
             <div id="audio-container">
                 <audio controls>
                     <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/youth.mp3" type="audio/mpeg">
-                    你的浏览器不支持播放此音频。
+                        你的浏览器不支持播放此音频。
+                    </source>
                 </audio>
             </div>
         </section>
@@ -231,22 +357,101 @@
         // 图片轮播功能
         const sliderContainer = document.getElementById('slider-container');
         const slides = sliderContainer.querySelectorAll('img');
+        const indicatorsContainer = document.getElementById('slider-indicators');
         let currentIndex = 0;
+        let autoplayInterval;
+
+        function createIndicators() {
+            slides.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.classList.add('slider-indicator');
+                if (index === 0) {
+                    indicator.classList.add('active');
+                }
+                indicator.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateSlider();
+                });
+                indicatorsContainer.appendChild(indicator);
+            });
+        }
 
         function prevSlide() {
             currentIndex = (currentIndex - 1 + slides.length) % slides.length;
             updateSlider();
+            resetAutoplay();
         }
 
         function nextSlide() {
             currentIndex = (currentIndex + 1) % slides.length;
             updateSlider();
+            resetAutoplay();
         }
 
         function updateSlider() {
             const offset = -currentIndex * 100;
             sliderContainer.style.transform = `translateX(${offset}%)`;
+            const indicators = indicatorsContainer.querySelectorAll('.slider-indicator');
+            indicators.forEach((indicator, index) => {
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
         }
+
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+
+        function resetAutoplay() {
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        }
+
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const loader = document.querySelector('.loader');
+            loader.style.opacity = 0;
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+
+            // 滚动加载动画
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            });
+            sections.forEach((section) => {
+                observer.observe(section);
+            });
+
+            // 生成漂浮小爱心
+            const createHeart = () => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '&#10084;';
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${Math.random() * 3 + 3}s`;
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            };
+
+            setInterval(createHeart, 500);
+        });
+
+        createIndicators();
+        startAutoplay();
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 </body>
