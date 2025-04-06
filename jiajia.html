@@ -13,6 +13,34 @@
             padding: 0;
         }
 
+        /* 导航栏样式 */
+        nav {
+            background-color: rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 汉堡菜单样式，用于移动端 */
+        .menu-icon {
+            display: none;
+            cursor: pointer;
+        }
+
         header {
             background-color: rgba(255, 255, 255, 0.3);
             text-align: center;
@@ -39,22 +67,44 @@
             padding-bottom: 10px;
         }
 
-        #image-container {
+        /* 图片轮播样式 */
+        .slider {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .slider-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            transition: transform 0.5s ease;
         }
 
-        #image-container img {
-            max-width: 200px;
+        .slider img {
+            width: 100%;
             height: auto;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            object-fit: cover;
         }
 
-        #image-container img:hover {
-            transform: scale(1.1);
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .slider-button.prev {
+            left: 10px;
+        }
+
+        .slider-button.next {
+            right: 10px;
         }
 
         #video-container video {
@@ -62,10 +112,26 @@
             height: auto;
             border-radius: 5px;
             margin-bottom: 10px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #video-container video:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
 
         #audio-container audio {
             margin-bottom: 10px;
+        }
+
+        /* 音频进度条样式 */
+        #audio-container audio::-webkit-media-controls-timeline {
+            background-color: #ffb6c1;
+            border-radius: 25px;
+        }
+
+        #audio-container audio::-webkit-media-controls-current-time-display,
+        #audio-container audio::-webkit-media-controls-time-remaining-display {
+            color: white;
         }
 
         footer {
@@ -75,10 +141,36 @@
             color: white;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
+
+        @media only screen and (max-width: 700px) {
+            nav a {
+                display: none;
+            }
+
+            .menu-icon {
+                display: block;
+                color: white;
+                font-size: 25px;
+            }
+
+            nav.responsive a {
+                display: block;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <nav>
+        <a href="#">首页</a>
+        <a href="#">图片</a>
+        <a href="#">视频</a>
+        <a href="#">音频</a>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
     <header>
         <h1>青春暗恋的美好时光</h1>
     </header>
@@ -87,10 +179,14 @@
         <!-- 图片展示区 -->
         <section id="image-section">
             <h2>那些美好的瞬间</h2>
-            <div id="image-container">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture1.jpg" alt="Picture 1">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture2.jpg" alt="Picture 2">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture3.jpg" alt="Picture 3">
+            <div class="slider">
+                <div class="slider-container" id="slider-container">
+                    <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture1.jpg" alt="Picture 1">
+                    <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture2.jpg" alt="Picture 2">
+                    <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture3.jpg" alt="Picture 3">
+                </div>
+                <button class="slider-button prev" onclick="prevSlide()">&#10094;</button>
+                <button class="slider-button next" onclick="nextSlide()">&#10095;</button>
             </div>
         </section>
 
@@ -124,6 +220,35 @@
     <footer>
         <p>&copy; 2024 青春暗恋回忆站</p>
     </footer>
+
+    <script>
+        // 导航栏汉堡菜单功能
+        function toggleMenu() {
+            const nav = document.querySelector('nav');
+            nav.classList.toggle('responsive');
+        }
+
+        // 图片轮播功能
+        const sliderContainer = document.getElementById('slider-container');
+        const slides = sliderContainer.querySelectorAll('img');
+        let currentIndex = 0;
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateSlider();
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            const offset = -currentIndex * 100;
+            sliderContainer.style.transform = `translateX(${offset}%)`;
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 </body>
 
-</html>
+</html>    
