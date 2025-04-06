@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>青春暗恋回忆</title>
+    <title>青春暗恋回忆网站</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -80,50 +80,83 @@
 
 <body>
     <header>
-        <h1>青春暗恋的美好时光</h1>
+        <h1>青春暗恋的回忆</h1>
     </header>
 
     <main>
         <!-- 图片展示区 -->
         <section id="image-section">
             <h2>那些美好的瞬间</h2>
-            <div id="image-container">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture1" alt="Picture 1">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture2" alt="Picture 2">
-                <img src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/picture3" alt="Picture 3">
-            </div>
+            <div id="image-container"></div>
         </section>
 
         <!-- 视频展示区 -->
         <section id="video-section">
             <h2>记录的点滴时光</h2>
-            <div id="video-container">
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/jay.mp4" type="video/mp4">
-                    你的浏览器不支持播放此视频。
-                </video>
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/love.mp4" type="video/mp4">
-                    你的浏览器不支持播放此视频。
-                </video>
-            </div>
+            <div id="video-container"></div>
         </section>
 
         <!-- 音频展示区 -->
         <section id="audio-section">
             <h2>心动的旋律</h2>
-            <div id="audio-container">
-                <audio controls>
-                    <source src="https://raw.githubusercontent.com/luckyZengJiaJia/study/main/youth.mp3" type="audio/mpeg">
-                    你的浏览器不支持播放此音频。
-                </audio>
-            </div>
+            <div id="audio-container"></div>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2024 青春暗恋回忆站</p>
     </footer>
+
+    <script>
+        // GitHub 仓库路径
+        const repoUrl = 'https://api.github.com/repos/luckyZengJiaJia/study/contents';
+        // 替换为你自己生成的个人访问令牌
+        const token = 'YOUR_PERSONAL_ACCESS_TOKEN'; 
+        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+
+        async function fetchFiles() {
+            try {
+                const headers = {
+                    'Authorization': `token ${token}`
+                };
+                const response = await fetch(corsProxy + repoUrl, { headers });
+                const data = await response.json();
+
+                const imageContainer = document.getElementById('image-container');
+                const videoContainer = document.getElementById('video-container');
+                const audioContainer = document.getElementById('audio-container');
+
+                data.forEach(item => {
+                    const url = item.download_url;
+                    // 尝试将所有文件都当作图片加载
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.onerror = function() {
+                        // 如果加载失败，再判断是否为视频或音频
+                        if (url.endsWith('.mp4') || url.endsWith('.mov')) {
+                            const video = document.createElement('video');
+                            video.src = url;
+                            video.controls = true;
+                            videoContainer.appendChild(video);
+                        } else if (url.endsWith('.mp3') || url.endsWith('.wav')) {
+                            const audio = document.createElement('audio');
+                            audio.src = url;
+                            audio.controls = true;
+                            audioContainer.appendChild(audio);
+                        }
+                        // 移除失败的图片元素
+                        this.remove();
+                    };
+                    imageContainer.appendChild(img);
+                });
+            } catch (error) {
+                console.error('Error fetching files:', error);
+            }
+        }
+
+        // 页面加载完成后获取文件
+        window.addEventListener('load', fetchFiles);
+    </script>
 </body>
 
 </html>
